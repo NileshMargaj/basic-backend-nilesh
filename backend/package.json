@@ -1,6 +1,6 @@
 {
   "name": "basic-backend-nilesh",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "basic backend setup",
   "main": "server.js",
   "type": "module",
