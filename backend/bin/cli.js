@@ -6,10 +6,20 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Define source (where the template files are stored inside your package)
 const templateRoot = path.resolve(__dirname, "..");
 
+// Target directory resolution:
+// 1. process.env.INIT_CWD -> Directory where user ran `npm install`
+// 2. process.cwd() -> Fallback for direct npx or local execution
+const baseUserDir = process.env.INIT_CWD || process.cwd();
+
+// Get optional project name parameter, or default to "backend"
 const projectName = process.argv[2] || "backend";
-const targetDir = path.resolve(process.cwd(), projectName);
+
+// Resolve final path relative to the user's terminal location
+const targetDir = path.resolve(baseUserDir, projectName);
 
 const excludedNames = new Set([
   "node_modules",
