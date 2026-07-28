@@ -4,6 +4,16 @@
   "description": "basic backend setup",
   "main": "server.js",
   "type": "module",
+  "bin": {
+    "basic-backend-nilesh": "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "server.js",
+    "README.md",
+    ".gitignore"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",

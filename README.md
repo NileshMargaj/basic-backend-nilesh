@@ -1,230 +1,263 @@
-# basic-backend-nilesh
+# Basic Backend Nilesh
 
-A ready-to-use Node.js backend starter package for Express, MongoDB, JWT authentication, cookie-based sessions, email notifications, and OTP password reset flows.
+A production-ready Node.js/Express backend starter pack with built-in authentication (JWT + cookies), OTP-based password reset, MongoDB integration, and email notifications — all pre-configured and ready to use.
 
-This package is designed for developers who want a clean backend foundation for authentication-driven REST APIs without setting up the same boilerplate again and again.
+[![npm version](https://img.shields.io/npm/v/basic-backend-nilesh)](https://www.npmjs.com/package/basic-backend-nilesh)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/NileshMargaj/basic-backend-nilesh/pulls)
 
-## Features
+---
 
-- Express.js server setup
-- MongoDB connection with Mongoose
-- User registration and login
-- Password hashing with bcrypt
-- JWT authentication
-- HTTP-only auth cookies
-- Protected profile route
-- Logout route
-- Forgot password flow with OTP
-- OTP verification
-- Password reset
-- Email delivery with Nodemailer
-- Environment-based configuration
-- Apache-2.0 licensed
+## ✨ Features
 
-## Installation
+- **🔐 Full Authentication System** — Register, Login, Logout with JWT tokens stored in HTTP-only cookies
+- **📧 Email Notifications** — Welcome emails on registration using Nodemailer (Gmail SMTP)
+- **🔑 OTP-Based Password Reset** — Forgot password flow with 6-digit OTP, verification, and secure password reset
+- **🛡️ Auth Middleware** — Protect routes with JWT verification (supports cookies & Bearer tokens)
+- **📦 CLI Scaffolding Tool** — Generate a fresh backend project instantly via `npx`
+- **🗄️ MongoDB + Mongoose** — Pre-configured database connection with clean schema models
+- **🍪 Cookie Parser** — Secure cookie-based session management
+- **⚡ Express 5** — Built on the latest Express framework
+- **🏗️ Modular Structure** — Well-organized controllers, models, routes, and utilities
 
-Install the package from npm:
+---
+
+## 🚀 Quick Start
+
+Scaffold a new backend project in seconds:
 
 ```bash
-npm install basic-backend-nilesh
+npx basic-backend-nilesh my-app
+cd my-app
+npm install
 ```
 
-Or clone the repository:
+Then configure your environment variables and start developing.
+
+---
+
+## 📋 Prerequisites
+
+- [Node.js](https://nodejs.org/) >= 18.x
+- [MongoDB](https://www.mongodb.com/) (local or [Atlas](https://www.mongodb.com/atlas))
+- A Gmail account with an [App Password](https://support.google.com/accounts/answer/185833) (for email features)
+
+---
+
+## 🛠️ Installation & Setup
+
+### Option 1 — Using NPX (recommended)
+
+```bash
+npx basic-backend-nilesh my-project
+cd my-project
+```
+
+### Option 2 — Manual Clone
 
 ```bash
 git clone https://github.com/NileshMargaj/basic-backend-nilesh.git
 cd basic-backend-nilesh
+```
+
+### Install Dependencies
+
+```bash
 npm install
 ```
 
-## Requirements
+### Environment Variables
 
-- Node.js 18 or newer recommended
-- MongoDB database
-- Gmail SMTP credentials or an app password for email sending
-
-## Environment Variables
-
-Create a `.env` file in the project root:
+Create a `.env` file in the root directory:
 
 ```env
-PORT=3000
-MONGO_CONNECTION_URI=mongodb://127.0.0.1:27017
-JWT_SECRET=your_strong_jwt_secret
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_email_app_password
+# MongoDB
+MONGO_CONNECTION_URI=mongodb://localhost:27017
+
+# JWT
+JWT_SECRET=your-super-secret-jwt-key
+
+# Email (Gmail App Password)
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-gmail-app-password
+
+# Environment
 NODE_ENV=development
 ```
 
-The MongoDB database name is configured in `src/constant/constant.js`.
+> **⚠️ Important:** Never commit your `.env` file to version control. It's already included in `.gitignore`.
 
-## Usage
-
-Start the server:
+### Start the Server
 
 ```bash
+# Development (with auto-reload)
+npm run dev
+
+# Production
 npm start
 ```
 
-Run in development mode with Nodemon:
+The server will start on `http://localhost:3000` (or the port specified in `PORT` env variable).
 
-```bash
-npm run dev
-```
+---
 
-By default, the server runs on:
+## 📡 API Reference
 
-```text
-http://localhost:3000
-```
+All endpoints are prefixed with `/api/auth`.
 
-## API Routes
+### Public Endpoints
 
-Base route:
+| Method | Endpoint                  | Description                      | Request Body                                     |
+|--------|---------------------------|----------------------------------|--------------------------------------------------|
+| POST   | `/api/auth/register`      | Register a new user              | `{ username, email, password }`                  |
+| POST   | `/api/auth/login`         | Login with email & password      | `{ email, password }`                            |
+| POST   | `/api/auth/logout`        | Logout and clear auth cookie     | —                                                |
+| POST   | `/api/auth/forgot-password` | Request OTP for password reset | `{ email }`                                      |
+| POST   | `/api/auth/verify-otp`    | Verify the 6-digit OTP           | `{ email, otp }`                                 |
+| POST   | `/api/auth/reset-password` | Reset password with verified OTP | `{ email, otp, newPassword }`                    |
 
-```text
-/api/auth
-```
+### Protected Endpoint
 
-### Register User
+| Method | Endpoint              | Description            | Auth Required |
+|--------|-----------------------|------------------------|---------------|
+| GET    | `/api/auth/profile`   | Get current user info  | ✅ Yes        |
 
-```http
-POST /api/auth/register
-```
+> **Headers for protected routes:**  
+> `Authorization: Bearer <token>`  
+> or the token is automatically read from the `token` cookie.
 
-Request body:
+### Response Format
 
-```json
-{
-  "username": "Nilesh",
-  "email": "nilesh@example.com",
-  "password": "password123"
-}
-```
-
-### Login User
-
-```http
-POST /api/auth/login
-```
-
-Request body:
+All API responses follow a consistent structure:
 
 ```json
 {
-  "email": "nilesh@example.com",
-  "password": "password123"
+  "success": true,
+  "message": "User registered successfully",
+  "user": {
+    "_id": "...",
+    "username": "...",
+    "email": "...",
+    "createdAt": "..."
+  }
 }
 ```
 
-### Logout User
-
-```http
-POST /api/auth/logout
-```
-
-### Get User Profile
-
-```http
-GET /api/auth/profile
-```
-
-Authentication is required. Send the token using the `token` cookie or an authorization header:
-
-```http
-Authorization: Bearer your_jwt_token
-```
-
-### Forgot Password
-
-```http
-POST /api/auth/forgot-password
-```
-
-Request body:
+Error responses:
 
 ```json
 {
-  "email": "nilesh@example.com"
+  "success": false,
+  "message": "User already exists"
 }
 ```
 
-### Verify OTP
+---
 
-```http
-POST /api/auth/verify-otp
+## 📁 Project Structure
+
 ```
-
-Request body:
-
-```json
-{
-  "email": "nilesh@example.com",
-  "otp": 123456
-}
-```
-
-### Reset Password
-
-```http
-POST /api/auth/reset-password
-```
-
-Request body:
-
-```json
-{
-  "email": "nilesh@example.com",
-  "otp": 123456,
-  "newPassword": "newPassword123"
-}
-```
-
-## Project Structure
-
-```text
 backend/
-  server.js
-  src/
-    app.js
-    constant/
-    controller/
-    database/
-    middlewre/
-    model/
-    route/
-    utility/
+├── bin/
+│   └── cli.js                  # CLI scaffolding entry point
+├── src/
+│   ├── constant/
+│   │   └── constant.js         # App constants (DB_NAME, etc.)
+│   ├── controller/
+│   │   └── user.controller.js  # Auth business logic
+│   ├── database/
+│   │   └── db.js               # MongoDB connection
+│   ├── middlewre/
+│   │   └── auth.middleware.js   # JWT authentication middleware
+│   ├── model/
+│   │   ├── user.model.js       # User schema
+│   │   └── otp.model.js        # OTP schema (auto-expires in 10 min)
+│   ├── route/
+│   │   └── user.route.js       # All auth route definitions
+│   ├── utility/
+│   │   └── sendEmil.utils.js   # Nodemailer email utility
+│   └── app.js                  # Express app setup & middleware
+├── server.js                   # Entry point
+├── package.json
+└── .gitignore
 ```
 
-## Scripts
+---
 
-```bash
-npm start
-```
+## 🔐 Authentication Flow
 
-Runs the production server using Node.js.
+### Registration
+1. User sends `POST /api/auth/register` with `{ username, email, password }`
+2. Server hashes the password with **bcrypt** (10 salt rounds)
+3. Creates user in MongoDB, generates a JWT, sets it as an HTTP-only cookie
+4. Sends a welcome email to the user
+5. Returns user data (without password)
 
-```bash
-npm run dev
-```
+### Login
+1. User sends `POST /api/auth/login` with `{ email, password }`
+2. Server verifies credentials, generates a JWT (expires in 2 days)
+3. Sets JWT as an HTTP-only cookie
+4. Returns user data (without password)
 
-Runs the development server using Nodemon.
+### Password Reset Flow
+1. **Forgot Password** — User requests OTP via email
+2. **Verify OTP** — User submits the received 6-digit OTP
+3. **Reset Password** — User sets a new password (OTP expires after verification)
 
-## Security Notes
+> OTPs are stored with a TTL (Time-To-Live) index and auto-delete after 10 minutes.
 
-- Keep `JWT_SECRET`, `EMAIL_USER`, and `EMAIL_PASS` private.
-- Use a strong JWT secret in production.
-- Use Gmail app passwords instead of your main account password.
-- Set `NODE_ENV=production` in production so cookies are marked secure.
-- Always use HTTPS in production.
+---
 
-## Repository
+## 🧰 Built With
 
-GitHub: [NileshMargaj/basic-backend-nilesh](https://github.com/NileshMargaj/basic-backend-nilesh)
+| Technology | Purpose |
+|------------|---------|
+| [Express](https://expressjs.com/) | Web framework (v5) |
+| [Mongoose](https://mongoosejs.com/) | MongoDB ODM |
+| [JSON Web Token](https://jwt.io/) | Authentication |
+| [bcrypt](https://github.com/kelektiv/node.bcrypt.js) | Password hashing |
+| [Nodemailer](https://nodemailer.com/) | Email delivery |
+| [cookie-parser](https://github.com/expressjs/cookie-parser) | Cookie handling |
+| [dotenv](https://github.com/motdotla/dotenv) | Environment variables |
 
-Report issues: [GitHub Issues](https://github.com/NileshMargaj/basic-backend-nilesh/issues)
+---
 
-## Author
+## 🤝 Contributing
 
-Nilesh Margaj
+Contributions are welcome! Here's how you can help:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+Please make sure your code follows the existing style and all tests pass.
+
+---
+
+## 🐛 Bug Reports & Feature Requests
+
+Found a bug or have an idea? Open an [issue](https://github.com/NileshMargaj/basic-backend-nilesh/issues) on GitHub.
+
+---
+
+## 📄 License
+
+This project is licensed under the **ISC License**.
+
+---
+
+## 👨‍💻 Author
+
+**Nilesh Margaj**
+
+- GitHub: [@NileshMargaj](https://github.com/NileshMargaj)
+- npm: [basic-backend-nilesh](https://www.npmjs.com/package/basic-backend-nilesh)
+
+---
+
+<p align="center">
+  Made with ❤️ by Nilesh Margaj
+</p>
 
