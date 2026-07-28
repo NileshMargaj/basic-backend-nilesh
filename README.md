@@ -228,8 +228,3 @@ Report issues: [GitHub Issues](https://github.com/NileshMargaj/basic-backend-nil
 
 Nilesh Margaj
 
-## License
-
-This project is licensed under the Apache License 2.0.
-
-You are free to use, modify, and distribute this package under the terms of the Apache-2.0 license.
